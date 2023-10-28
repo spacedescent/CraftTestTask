@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="mac" appearance="light">
+        <simulatedSceneSize key="mac" width="375" height="490"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="LogoPickerHomeTest" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" clipsSubviews="YES" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="490"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZUd-eb-YMQ" customClass="LogoView" customModule="LogoPickerHomeTest" customModuleProvider="target">
+                                <rect key="frame" x="44" y="20" width="128" height="128"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TT" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="abU-DK-VlA">
+                                        <rect key="frame" x="39" y="39" width="50" height="50"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="42"/>
+                                        <color key="textColor" systemColor="systemBackgroundColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dOm-AI-VDf">
+                                        <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="128" id="5KR-uy-sLq"/>
+                                    <constraint firstItem="dOm-AI-VDf" firstAttribute="top" secondItem="ZUd-eb-YMQ" secondAttribute="top" id="9z7-XF-nGx"/>
+                                    <constraint firstItem="abU-DK-VlA" firstAttribute="centerX" secondItem="ZUd-eb-YMQ" secondAttribute="centerX" id="Gwb-eu-Tut"/>
+                                    <constraint firstItem="dOm-AI-VDf" firstAttribute="leading" secondItem="ZUd-eb-YMQ" secondAttribute="leading" id="NCC-kn-hRb"/>
+                                    <constraint firstAttribute="width" constant="128" id="Onb-c0-Ym3"/>
+                                    <constraint firstAttribute="bottom" secondItem="dOm-AI-VDf" secondAttribute="bottom" id="UhE-Nf-2Dg"/>
+                                    <constraint firstAttribute="trailing" secondItem="dOm-AI-VDf" secondAttribute="trailing" id="eX2-eV-mji"/>
+                                    <constraint firstItem="abU-DK-VlA" firstAttribute="centerY" secondItem="ZUd-eb-YMQ" secondAttribute="centerY" id="lAX-60-qaq"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="imageView" destination="dOm-AI-VDf" id="vIp-Oe-mFa"/>
+                                    <outlet property="initialsLabel" destination="abU-DK-VlA" id="kqm-qj-TM1"/>
+                                </connections>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U8p-vv-uwg">
+                                <rect key="frame" x="20" y="168" width="175.5" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Change Logo"/>
+                                <connections>
+                                    <action selector="changeLogoButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="RlE-B5-38R"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pKG-G7-ewS">
+                                <rect key="frame" x="20" y="223" width="175.5" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Toggle Logo Shape"/>
+                                <connections>
+                                    <action selector="toggleLogoShapeButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cpz-D3-Aej"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="pKG-G7-ewS" firstAttribute="top" secondItem="U8p-vv-uwg" secondAttribute="bottom" constant="20" id="1MI-Th-LVq"/>
+                            <constraint firstItem="ZUd-eb-YMQ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="AyT-Rn-IMd"/>
+                            <constraint firstItem="U8p-vv-uwg" firstAttribute="top" secondItem="ZUd-eb-YMQ" secondAttribute="bottom" constant="20" id="HVJ-Jm-isA"/>
+                            <constraint firstItem="U8p-vv-uwg" firstAttribute="centerX" secondItem="dOm-AI-VDf" secondAttribute="centerX" id="Jfs-Dh-33Q"/>
+                            <constraint firstItem="pKG-G7-ewS" firstAttribute="centerX" secondItem="U8p-vv-uwg" secondAttribute="centerX" id="Vbt-TA-JAg"/>
+                            <constraint firstItem="pKG-G7-ewS" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="cTJ-cd-NGy"/>
+                            <constraint firstItem="U8p-vv-uwg" firstAttribute="width" secondItem="pKG-G7-ewS" secondAttribute="width" id="nBl-22-bpy"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="changeLogoButton" destination="U8p-vv-uwg" id="iEC-pH-IFP"/>
+                        <outlet property="logoView" destination="ZUd-eb-YMQ" id="MU3-EH-eW3"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-292" y="-463"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>
