@@ -14,8 +14,8 @@ public protocol LogoPickerViewControllerDelegate {
 }
 
 protocol LogoPickerView: AnyObject {
-    func openImagePicker()
-    func openCameraPicker()
+    func pickImage() async -> [PHPickerResult]
+    func pickCameraPhoto() async -> UIImage?
     func notifyOnStyleChanged(_ style: LogoStyle)
     func notifyOnPickingFinished()
 }
@@ -34,6 +34,9 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
     
     let viewModel: LogoPickerViewModel = LogoPickerViewModelImpl()
     
+    private var imagePickerContinuation: CheckedContinuation<[PHPickerResult], Never>?
+    private var cameraPickerContinuation: CheckedContinuation<UIImage?, Never>?
+
     // MARK: - UI Elements
     
     private func createLabel(title: String, fontSize: CGFloat) -> UILabel {
@@ -116,7 +119,6 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
         return view
     }()
 
-    
     // MARK: - View Controller cycle
     
     public override func loadView() {
@@ -138,21 +140,31 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
     
     // MARK: - LogoPickerView methods
     
-    func openImagePicker() {
-        var configuration = PHPickerConfiguration()
-        configuration.selectionLimit = 1
-        configuration.filter = .images
-        let pickerVC = PHPickerViewController(configuration: configuration)
-        pickerVC.delegate = self
-        present(pickerVC, animated: true)
+    @MainActor
+    func pickImage() async -> [PHPickerResult] {
+        await withCheckedContinuation { continuation in
+            self.imagePickerContinuation = continuation
+            
+            var configuration = PHPickerConfiguration()
+            configuration.selectionLimit = 1
+            configuration.filter = .images
+            let pickerVC = PHPickerViewController(configuration: configuration)
+            pickerVC.delegate = self
+            present(pickerVC, animated: true)
+        }
     }
     
-    func openCameraPicker() {
-        let cameraPickerVC = UIImagePickerController()
-        cameraPickerVC.sourceType = .camera
-        cameraPickerVC.allowsEditing = true
-        cameraPickerVC.delegate = self
-        present(cameraPickerVC, animated: true)
+    @MainActor
+    func pickCameraPhoto() async -> UIImage? {
+        await withCheckedContinuation { continuation in
+            self.cameraPickerContinuation = continuation
+            
+            let cameraPickerVC = UIImagePickerController()
+            cameraPickerVC.sourceType = .camera
+            cameraPickerVC.allowsEditing = true
+            cameraPickerVC.delegate = self
+            present(cameraPickerVC, animated: true)
+        }
     }
     
     func notifyOnStyleChanged(_ style: LogoStyle) {
@@ -310,24 +322,22 @@ extension LogoPickerViewController: UITabBarDelegate {
 extension LogoPickerViewController: PHPickerViewControllerDelegate {
     public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
-        guard let itemprovider = results.first?.itemProvider,
-              itemprovider.hasItemConformingToTypeIdentifier(UTType.jpeg.identifier) else {
-            return
-        }
-        itemprovider.loadFileRepresentation(forTypeIdentifier: UTType.jpeg.identifier) { [unowned self] imageUrl, error in
-            self.viewModel.onPickTemporaryImage(url: imageUrl, error: error)
-        }
+        imagePickerContinuation?.resume(returning: results)
+        imagePickerContinuation = nil
     }
 }
 
 extension LogoPickerViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
-        guard let image = info[.editedImage] as? UIImage else {
-            assertionFailure("No image found")
-            return
-        }
-        viewModel.onPickCameraImage(image: image)
+        let image = info[.editedImage] as? UIImage
+        cameraPickerContinuation?.resume(returning: image)
+        cameraPickerContinuation = nil
+    }
+    
+    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        cameraPickerContinuation?.resume(returning: nil)
+        cameraPickerContinuation = nil
     }
 }
 

@@ -7,11 +7,10 @@
 
 import Foundation
 import UIKit
+import PhotosUI
 
 protocol LogoPickerViewModel: AnyObject {
     var view: LogoPickerView? { get set }
-    func onPickTemporaryImage(url: URL?, error: Error?)
-    func onPickCameraImage(image: UIImage)
 
     // Recent images collection view data source. May be extracted into a separate data source class id needed
     func numberOfItems(in section: Int) -> Int
@@ -29,35 +28,6 @@ final class LogoPickerViewModelImpl: LogoPickerViewModel {
         self.recentImagesService = recentImagesService
     }
     
-    func onPickTemporaryImage(url: URL?, error: Error?) {
-        if let imageUrl = url {
-            let fileManager = FileManager.default
-            let newFileName = imageUrl.lastPathComponent
-            let copiedImageUrl = getDocumentsDirectory().appendingPathComponent(newFileName)
-            do {
-                // We are already on a background queue
-                try? fileManager.removeItem(at: copiedImageUrl)
-                try fileManager.copyItem(at: imageUrl, to: copiedImageUrl)
-            }
-            catch {
-                // TODO: handle error if needed
-            }
-            notifyOnReadyImage(url: copiedImageUrl)
-        } else if let error = error {
-            // TODO: add error handling - show notification/toast if something went wrong
-        }
-    }
-    
-    func onPickCameraImage(image: UIImage) {
-        let imageFileName = "\(NSUUID().uuidString.prefix(10)).jpg"
-        let imageFileUrl = getDocumentsDirectory().appendingPathComponent(imageFileName)
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let data = image.jpegData(compressionQuality: 0.8) else { return }
-            try? data.write(to: imageFileUrl)
-            self?.notifyOnReadyImage(url: imageFileUrl)
-        }
-    }
-    
     // MARK: - Private methods
     
     private func getDocumentsDirectory() -> URL {
@@ -65,12 +35,56 @@ final class LogoPickerViewModelImpl: LogoPickerViewModel {
         return paths[0]
     }
     
-    private func notifyOnReadyImage(url: URL) {
-        DispatchQueue.main.async { [weak self] in
-            self?.recentImagesService.add(imageUrl: url.absoluteString)
-            self?.view?.notifyOnStyleChanged(.image(url: url))
-            self?.view?.notifyOnPickingFinished()
+    @MainActor private func notifyOnReadyImage(url: URL) async {
+        recentImagesService.add(imageUrl: url.absoluteString)
+        view?.notifyOnStyleChanged(.image(url: url))
+        view?.notifyOnPickingFinished()
+    }
+    
+    private func pickImage() {
+        Task(priority: .userInitiated) {
+            let results = await view?.pickImage()
+            guard let itemprovider = results?.first?.itemProvider else { return }
+            guard let image = try? await loadImage(from: itemprovider) else { return }
+            let imageFileName = "\(NSUUID().uuidString.prefix(10)).jpg"
+            guard let imageFileUrl = try await saveImage(image, fileName: imageFileName) else { return }
+            await notifyOnReadyImage(url: imageFileUrl)
         }
+    }
+    
+    private func pickCameraPhoto() {
+        Task(priority: .userInitiated) {
+            guard let image = await view?.pickCameraPhoto() else { return }
+            let imageFileName = "\(NSUUID().uuidString.prefix(10)).jpg"
+            guard let imageFileUrl = try await saveImage(image, fileName: imageFileName) else { return }
+            await notifyOnReadyImage(url: imageFileUrl)
+        }
+    }
+    
+    private func loadImage(from itemprovider: NSItemProvider) async throws -> UIImage? {
+        try await withCheckedThrowingContinuation { continuation in
+            guard itemprovider.canLoadObject(ofClass: UIImage.self) else {
+                continuation.resume(returning: nil)
+                return
+            }
+            _ = itemprovider.loadObject(ofClass: UIImage.self) { image, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                let selectedImage = image as? UIImage
+                continuation.resume(returning: selectedImage)
+            }
+        }
+    }
+    
+    private func saveImage(_ image: UIImage, fileName: String) async throws -> URL? {
+        let imageFileUrl = getDocumentsDirectory().appendingPathComponent(fileName)
+        guard let data = image.jpegData(compressionQuality: 0.8) else {
+            return nil
+        }
+        try data.write(to: imageFileUrl)
+        return imageFileUrl
     }
     
     // MARK: - Recents Collection View Datasource
@@ -82,9 +96,9 @@ final class LogoPickerViewModelImpl: LogoPickerViewModel {
     func cellViewModel(forItemAt indexPath: IndexPath) -> ImagesCollectionViewCellViewModel {
         if indexPath.item == 0 {
             return .pickImageCell(onTapPick: { [unowned self] in
-                self.view?.openImagePicker()
+                self.pickImage()
             }, onTapTakePhoto: { [unowned self] in
-                self.view?.openCameraPicker()
+                self.pickCameraPhoto()
             })
         }
         let recentIndex = indexPath.item - 1
