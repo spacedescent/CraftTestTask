@@ -18,6 +18,10 @@ protocol LogoPickerViewModel: AnyObject {
     func didSelectItem(at indexPath: IndexPath)
 }
 
+fileprivate enum Constants {
+    static let logoSize = CGSize(width: 512, height: 512)
+}
+
 final class LogoPickerViewModelImpl: LogoPickerViewModel {
     weak var view: LogoPickerView?
     
@@ -46,8 +50,9 @@ final class LogoPickerViewModelImpl: LogoPickerViewModel {
             let results = await view?.pickImage()
             guard let itemprovider = results?.first?.itemProvider else { return }
             guard let image = try? await loadImage(from: itemprovider) else { return }
+            let resizedImage = image.resizedTo(size: Constants.logoSize) ?? image
             let imageFileName = "\(NSUUID().uuidString.prefix(10)).jpg"
-            guard let imageFileUrl = try await saveImage(image, fileName: imageFileName) else { return }
+            guard let imageFileUrl = try await saveImage(resizedImage, fileName: imageFileName) else { return }
             await notifyOnReadyImage(url: imageFileUrl)
         }
     }
@@ -55,8 +60,9 @@ final class LogoPickerViewModelImpl: LogoPickerViewModel {
     private func pickCameraPhoto() {
         Task(priority: .userInitiated) {
             guard let image = await view?.pickCameraPhoto() else { return }
+            let resizedImage = image.resizedTo(size: Constants.logoSize) ?? image
             let imageFileName = "\(NSUUID().uuidString.prefix(10)).jpg"
-            guard let imageFileUrl = try await saveImage(image, fileName: imageFileName) else { return }
+            guard let imageFileUrl = try await saveImage(resizedImage, fileName: imageFileName) else { return }
             await notifyOnReadyImage(url: imageFileUrl)
         }
     }

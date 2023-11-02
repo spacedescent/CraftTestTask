@@ -336,6 +336,7 @@ extension LogoPickerViewController: UIImagePickerControllerDelegate, UINavigatio
     }
     
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
         cameraPickerContinuation?.resume(returning: nil)
         cameraPickerContinuation = nil
     }
