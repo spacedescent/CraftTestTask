@@ -67,7 +67,6 @@ final class LogoView: UIView {
                 backgroundColor = .clear
                 backgroundLayer?.removeFromSuperlayer()
                 let spaceLayer = SpaceLayer()
-                spaceLayer.delegate = self
                 layer.insertSublayer(spaceLayer, at: 0)
                 backgroundLayer = spaceLayer
                 spaceLayer.setNeedsDisplay()

@@ -11,7 +11,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var logoView: LogoView!
     @IBOutlet weak var changeLogoButton: UIButton!
     
-    var logoStyle: LogoStyle = .solid(color: .systemMint)
+    var logoStyle: LogoStyle = .default
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,9 +22,6 @@ class ViewController: UIViewController {
     }
 
     private func createPicker(sourceView: UIView) -> LogoPickerViewController? {
-//        guard let avatarPickerVC = storyboard?.instantiateViewController(withIdentifier: "AvatarPickerViewController") as? LogoPickerViewController2 else {
-//            return nil
-//        }
         let avatarPickerVC = LogoPickerViewController()
         avatarPickerVC.delegate = self
         avatarPickerVC.modalPresentationStyle = .popover
