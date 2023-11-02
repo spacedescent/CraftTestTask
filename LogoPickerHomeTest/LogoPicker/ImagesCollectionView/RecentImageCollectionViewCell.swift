@@ -33,8 +33,8 @@ class RecentImageCollectionViewCell: UICollectionViewCell {
     }
     
     override func layoutSubviews() {
-        imageView.frame = bounds
         super.layoutSubviews()
+        imageView.frame = contentView.bounds
     }
     
     override func prepareForReuse() {

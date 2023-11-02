@@ -8,6 +8,6 @@
 import Foundation
 
 enum ImagesCollectionViewCellViewModel {
-    case pickImageCell(onTap: () -> Void)
+    case pickImageCell(onTapPick: () -> Void, onTapTakePhoto: () -> Void)
     case recentImageCell(imageUrl: URL)
 }

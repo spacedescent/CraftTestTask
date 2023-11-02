@@ -15,9 +15,10 @@ extension LogoPickerViewController: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cellViewModel = viewModel.cellViewModel(forItemAt: indexPath)
         switch cellViewModel {
-        case .pickImageCell(onTap: let onTap):
+        case .pickImageCell(onTapPick: let onTapPick, onTapTakePhoto: let onTapTakePhoto):
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SelectImageCollectionViewCell", for: indexPath) as! SelectImageCollectionViewCell
-            cell.onTap = onTap
+            cell.onTapPick = onTapPick
+            cell.onTapTakePhoto = onTapTakePhoto
             return cell
         case .recentImageCell(imageUrl: let imageUrl):
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "RecentImageCollectionViewCell", for: indexPath) as! RecentImageCollectionViewCell

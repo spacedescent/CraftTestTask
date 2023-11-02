@@ -15,6 +15,7 @@ public protocol LogoPickerViewControllerDelegate {
 
 protocol LogoPickerView: AnyObject {
     func openImagePicker()
+    func openCameraPicker()
     func notifyOnStyleChanged(_ style: LogoStyle)
     func notifyOnPickingFinished()
 }
@@ -141,9 +142,17 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
         var configuration = PHPickerConfiguration()
         configuration.selectionLimit = 1
         configuration.filter = .images
-        let pickerView = PHPickerViewController(configuration: configuration)
-        pickerView.delegate = self
-        self.present(pickerView, animated: true)
+        let pickerVC = PHPickerViewController(configuration: configuration)
+        pickerVC.delegate = self
+        present(pickerVC, animated: true)
+    }
+    
+    func openCameraPicker() {
+        let cameraPickerVC = UIImagePickerController()
+        cameraPickerVC.sourceType = .camera
+        cameraPickerVC.allowsEditing = true
+        cameraPickerVC.delegate = self
+        present(cameraPickerVC, animated: true)
     }
     
     func notifyOnStyleChanged(_ style: LogoStyle) {
@@ -296,6 +305,8 @@ extension LogoPickerViewController: UITabBarDelegate {
     }
 }
 
+// MARK: - Image picker delegates
+
 extension LogoPickerViewController: PHPickerViewControllerDelegate {
     public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
@@ -306,6 +317,17 @@ extension LogoPickerViewController: PHPickerViewControllerDelegate {
         itemprovider.loadFileRepresentation(forTypeIdentifier: UTType.jpeg.identifier) { [unowned self] imageUrl, error in
             self.viewModel.onPickTemporaryImage(url: imageUrl, error: error)
         }
+    }
+}
+
+extension LogoPickerViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        guard let image = info[.editedImage] as? UIImage else {
+            assertionFailure("No image found")
+            return
+        }
+        viewModel.onPickCameraImage(image: image)
     }
 }
 
