@@ -11,8 +11,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var logoView: LogoView!
     @IBOutlet weak var changeLogoButton: UIButton!
     
-    var logoStyle: LogoStyle = .default
-    var logoShape: LogoShape = .roundedRect {
+    private let defaultLogoStyle = LogoStyle.default(startColor: .systemBlue, endColor: .magenta)
+    
+    private var logoStyle: LogoStyle = .default(startColor: .systemBlue, endColor: .magenta)
+    private var logoShape: LogoShape = .roundedRect {
         didSet {
             logoView.shape = logoShape
         }
@@ -42,7 +44,7 @@ class ViewController: UIViewController {
             return
         }
         avatarPickerVC.shape = logoView.shape
-        avatarPickerVC.style = logoView.style ?? .default
+        avatarPickerVC.style = logoView.style ?? defaultLogoStyle
         self.present(avatarPickerVC, animated: true)
     }
     

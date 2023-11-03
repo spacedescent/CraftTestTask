@@ -22,14 +22,16 @@ protocol LogoPickerView: AnyObject {
 }
 
 fileprivate struct ColorDefaults {
+    static let defaultStart = UIColor.systemBlue
+    static let defaultEnd = UIColor.magenta
     static let background = UIColor.systemMint
-    static let start = UIColor.systemBlue
-    static let end = UIColor.systemGreen
+    static let gradientStart = UIColor.systemBlue
+    static let gradientEnd = UIColor.systemGreen
 }
 
 public final class LogoPickerViewController: UIViewController, LogoPickerView {
     public var shape: LogoShape = .roundedRect
-    public var style: LogoStyle = .default
+    public var style: LogoStyle = .default(startColor: .black, endColor: .white)
     
     public var delegate: LogoPickerViewControllerDelegate?
     
@@ -75,12 +77,25 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
     }
     
     private lazy var backgroundColorWell = createColorWell()
-    private lazy var startColorWell = createColorWell()
-    private lazy var endColorWell = createColorWell()
+    private lazy var defaultStartColorWell = createColorWell()
+    private lazy var defaultEndColorWell = createColorWell()
+    private lazy var gradientStartColorWell = createColorWell()
+    private lazy var gradientEndColorWell = createColorWell()
     
     private lazy var backgroundColorLabel = createLabel(title: NSLocalizedString("Background Color", comment: ""), fontSize: 13)
-    private lazy var startColorLabel = createLabel(title: NSLocalizedString("Start Color", comment: ""), fontSize: 13)
-    private lazy var endColorLabel = createLabel(title: NSLocalizedString("End Color", comment: ""), fontSize: 13)
+    private lazy var defaultStartColorLabel = createLabel(title: NSLocalizedString("Start Color", comment: ""), fontSize: 13)
+    private lazy var defaultEndColorLabel = createLabel(title: NSLocalizedString("End Color", comment: ""), fontSize: 13)
+    private lazy var gradientStartColorLabel = createLabel(title: NSLocalizedString("Start Color", comment: ""), fontSize: 13)
+    private lazy var gradientEndColorLabel = createLabel(title: NSLocalizedString("End Color", comment: ""), fontSize: 13)
+    
+    private lazy var defaultSection: UIView = {
+        let view = UIView()
+        view.addSubview(self.defaultStartColorLabel)
+        view.addSubview(self.defaultEndColorLabel)
+        view.addSubview(self.defaultStartColorWell)
+        view.addSubview(self.defaultEndColorWell)
+        return view
+    }()
     
     private lazy var solidSection: UIView = {
         let view = UIView()
@@ -91,10 +106,10 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
     
     private lazy var gradientSection: UIView = {
         let view = UIView()
-        view.addSubview(self.startColorLabel)
-        view.addSubview(self.endColorLabel)
-        view.addSubview(self.startColorWell)
-        view.addSubview(self.endColorWell)
+        view.addSubview(self.gradientStartColorLabel)
+        view.addSubview(self.gradientEndColorLabel)
+        view.addSubview(self.gradientStartColorWell)
+        view.addSubview(self.gradientEndColorWell)
         return view
     }()
     
@@ -200,6 +215,7 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
         view.backgroundColor = .systemGray6
         view.addSubview(headerLabel)
         view.addSubview(tabBar)
+        view.addSubview(defaultSection)
         view.addSubview(solidSection)
         view.addSubview(gradientSection)
         view.addSubview(imageSection)
@@ -246,29 +262,44 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
         backgroundColorWell.center.y = colorWellSize.height / 2
         backgroundColorWell.frame.size = colorWellSize
         
-        startColorLabel.sizeToFit()
-        endColorLabel.sizeToFit()
+        gradientStartColorLabel.sizeToFit()
+        gradientEndColorLabel.sizeToFit()
         
         let sectionSpacing: CGFloat = 8
-        let secondColorWellSectionHeight = max(endColorLabel.bounds.height, colorWellSize.height)
+        let secondColorWellSectionHeight = max(gradientEndColorLabel.bounds.height, colorWellSize.height)
         let gradientSectionFrame = CGRect(x: contentRegion.minX,
                                           y: tabBarFrame.maxY + innerPadding,
                                           width: contentRegion.width,
                                           height: firstColorWellSectionHeight + sectionSpacing + secondColorWellSectionHeight)
         gradientSection.frame = gradientSectionFrame
-        startColorLabel.frame.origin.x = 0
-        startColorLabel.center.y = colorWellSize.height / 2
-        startColorWell.frame.origin.x = solidSectionFrame.width - colorWellSize.width
-        startColorWell.center.y = colorWellSize.height / 2
-        startColorWell.frame.size = colorWellSize
-        endColorLabel.frame.origin.x = 0
-        endColorLabel.center.y = firstColorWellSectionHeight + sectionSpacing + colorWellSize.height / 2
-        endColorWell.frame.origin.x = solidSectionFrame.width - colorWellSize.width
-        endColorWell.center.y = firstColorWellSectionHeight + sectionSpacing + colorWellSize.height / 2
-        endColorWell.frame.size = colorWellSize
+        gradientStartColorLabel.frame.origin.x = 0
+        gradientStartColorLabel.center.y = colorWellSize.height / 2
+        gradientStartColorWell.frame.origin.x = solidSectionFrame.width - colorWellSize.width
+        gradientStartColorWell.center.y = colorWellSize.height / 2
+        gradientStartColorWell.frame.size = colorWellSize
+        gradientEndColorLabel.frame.origin.x = 0
+        gradientEndColorLabel.center.y = firstColorWellSectionHeight + sectionSpacing + colorWellSize.height / 2
+        gradientEndColorWell.frame.origin.x = solidSectionFrame.width - colorWellSize.width
+        gradientEndColorWell.center.y = firstColorWellSectionHeight + sectionSpacing + colorWellSize.height / 2
+        gradientEndColorWell.frame.size = colorWellSize
+        
+        // No need to calculate "Default" section separately, because it's identical to Gradient section
+        defaultSection.frame = gradientSection.frame
+        defaultStartColorLabel.frame = gradientStartColorLabel.frame
+        defaultStartColorWell.frame = gradientStartColorWell.frame
+        defaultEndColorLabel.frame = gradientEndColorLabel.frame
+        defaultEndColorWell.frame = gradientEndColorWell.frame
     }
     
     private func setupStylesUI() {
+        if case let .gradient(startColor, endColor) = style {
+            defaultStartColorWell.selectedColor = startColor
+            defaultEndColorWell.selectedColor = endColor
+        } else {
+            defaultStartColorWell.selectedColor = ColorDefaults.defaultStart
+            defaultEndColorWell.selectedColor = ColorDefaults.defaultEnd
+        }
+        
         if case let .solid(color) = style {
             backgroundColorWell.selectedColor = color
         } else {
@@ -276,11 +307,11 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
         }
 
         if case let .gradient(startColor, endColor) = style {
-            startColorWell.selectedColor = startColor
-            endColorWell.selectedColor = endColor
+            gradientStartColorWell.selectedColor = startColor
+            gradientEndColorWell.selectedColor = endColor
         } else {
-            startColorWell.selectedColor = ColorDefaults.start
-            endColorWell.selectedColor = ColorDefaults.end
+            gradientStartColorWell.selectedColor = ColorDefaults.gradientStart
+            gradientEndColorWell.selectedColor = ColorDefaults.gradientEnd
         }
 
         if let itemToSelect = tabBar.items?.first(where: { $0.tag == style.tabBarSelection.tag }) {
@@ -291,6 +322,7 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
     private func updateSections() {
         guard let selectedItem = tabBar.selectedItem,
               let selectedSection = LogoTabbarSelection(rawValue: selectedItem.tag) else { return }
+        defaultSection.isHidden = selectedSection != .default
         solidSection.isHidden = selectedSection != .solid
         gradientSection.isHidden = selectedSection != .gradient
         imageSection.isHidden = selectedSection != .image
@@ -298,12 +330,18 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
     
     @objc func colorWellChanged(_ sender: UIColorWell) {
         switch sender {
+        case defaultStartColorWell, defaultEndColorWell:
+            guard let startColor = defaultStartColorWell.selectedColor,
+                  let endColor = defaultEndColorWell.selectedColor else {
+                return
+            }
+            delegate?.picker(self, didPick: .default(startColor: startColor, endColor: endColor))
         case backgroundColorWell:
             guard let solidColor = sender.selectedColor else { return }
             delegate?.picker(self, didPick: .solid(color: solidColor))
-        case startColorWell, endColorWell:
-            guard let startColor = startColorWell.selectedColor,
-                  let endColor = endColorWell.selectedColor else {
+        case gradientStartColorWell, gradientEndColorWell:
+            guard let startColor = gradientStartColorWell.selectedColor,
+                  let endColor = gradientEndColorWell.selectedColor else {
                 return
             }
             delegate?.picker(self, didPick: .gradient(startColor: startColor, endColor: endColor))
@@ -322,13 +360,15 @@ extension LogoPickerViewController: UITabBarDelegate {
         
         switch selectedSection {
         case .default:
-            notifyOnStyleChanged(.default)
+            let startColor = defaultStartColorWell.selectedColor ?? .clear
+            let endColor = defaultEndColorWell.selectedColor ?? .clear
+            notifyOnStyleChanged(.default(startColor: startColor, endColor: endColor))
         case .solid:
             let solidColor = backgroundColorWell.selectedColor ?? .clear
             notifyOnStyleChanged(.solid(color: solidColor))
         case .gradient:
-            let startColor = startColorWell.selectedColor ?? .clear
-            let endColor = endColorWell.selectedColor ?? .clear
+            let startColor = gradientStartColorWell.selectedColor ?? .clear
+            let endColor = gradientEndColorWell.selectedColor ?? .clear
             notifyOnStyleChanged(.gradient(startColor: startColor, endColor: endColor))
         case .image:
             break

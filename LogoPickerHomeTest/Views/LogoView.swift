@@ -62,11 +62,13 @@ final class LogoView: UIView {
     private func updateLogoStyle() {
         if let style = style {
             switch style {
-            case .default:
+            case .default(startColor: let startColor, endColor: let endColor):
                 imageView.image = nil
                 backgroundColor = .clear
                 backgroundLayer?.removeFromSuperlayer()
                 let spaceLayer = SpaceLayer()
+                spaceLayer.startColor = startColor.cgColor
+                spaceLayer.endColor = endColor.cgColor
                 layer.insertSublayer(spaceLayer, at: 0)
                 backgroundLayer = spaceLayer
                 spaceLayer.setNeedsDisplay()

@@ -16,7 +16,7 @@ public enum LogoShape {
 // MARK: - UI style representation
 
 public enum LogoStyle {
-    case `default`
+    case `default`(startColor: UIColor, endColor: UIColor)
     case solid(color: UIColor)
     case gradient(startColor: UIColor, endColor: UIColor)
     case image(url: URL)
@@ -30,7 +30,7 @@ public struct ColorDto: Codable {
 }
 
 public enum LogoStyleDto: Codable {
-    case `default`
+    case `default`(startColor: ColorDto, endColor: ColorDto)
     case solid(color: ColorDto)
     case gradient(startColor: ColorDto, endColor: ColorDto)
     case image(url: String)
