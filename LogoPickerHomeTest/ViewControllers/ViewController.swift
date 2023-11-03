@@ -12,6 +12,11 @@ class ViewController: UIViewController {
     @IBOutlet weak var changeLogoButton: UIButton!
     
     var logoStyle: LogoStyle = .default
+    var logoShape: LogoShape = .roundedRect {
+        didSet {
+            logoView.shape = logoShape
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +28,7 @@ class ViewController: UIViewController {
 
     private func createPicker(sourceView: UIView) -> LogoPickerViewController? {
         let avatarPickerVC = LogoPickerViewController()
+        avatarPickerVC.shape = logoShape
         avatarPickerVC.delegate = self
         avatarPickerVC.modalPresentationStyle = .popover
         guard let popover = avatarPickerVC.popoverPresentationController else { return nil }
@@ -41,7 +47,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func toggleLogoShapeButtonPressed(_ sender: Any) {
-        logoView.shape = logoView.shape == .circle ? .roundedRect : .circle
+        logoShape = logoShape == .circle ? .roundedRect : .circle
     }
 }
 

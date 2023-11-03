@@ -16,6 +16,7 @@ public protocol LogoPickerViewControllerDelegate {
 protocol LogoPickerView: AnyObject {
     func pickImage() async -> [PHPickerResult]
     func pickCameraPhoto() async -> UIImage?
+    func selectImageCropRegion(image: UIImage) async -> CGRect?
     func notifyOnStyleChanged(_ style: LogoStyle)
     func notifyOnPickingFinished()
 }
@@ -158,12 +159,30 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
     func pickCameraPhoto() async -> UIImage? {
         await withCheckedContinuation { continuation in
             self.cameraPickerContinuation = continuation
-            
             let cameraPickerVC = UIImagePickerController()
             cameraPickerVC.sourceType = .camera
-            cameraPickerVC.allowsEditing = true
             cameraPickerVC.delegate = self
             present(cameraPickerVC, animated: true)
+        }
+    }
+    
+    @MainActor
+    func selectImageCropRegion(image: UIImage) async -> CGRect? {
+        await withCheckedContinuation { continuation in
+            let imageCropVC = ImageResizeViewController(nibName: String(describing: ImageResizeViewController.self), bundle: nil)
+            imageCropVC.modalPresentationStyle = .fullScreen
+            imageCropVC.isModalInPresentation = true
+            imageCropVC.onCancel = { [unowned self] in
+                continuation.resume(returning: nil)
+                self.dismiss(animated: true)
+            }
+            imageCropVC.onDone = { [unowned self] rect in
+                continuation.resume(returning: rect)
+                self.dismiss(animated: true)
+            }
+            imageCropVC.originalImage = image
+            imageCropVC.maskShape = shape
+            present(imageCropVC, animated: true)
         }
     }
     
@@ -330,7 +349,7 @@ extension LogoPickerViewController: PHPickerViewControllerDelegate {
 extension LogoPickerViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
-        let image = info[.editedImage] as? UIImage
+        let image = info[.originalImage] as? UIImage
         cameraPickerContinuation?.resume(returning: image)
         cameraPickerContinuation = nil
     }

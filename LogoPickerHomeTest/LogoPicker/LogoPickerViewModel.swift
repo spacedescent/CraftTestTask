@@ -45,25 +45,33 @@ final class LogoPickerViewModelImpl: LogoPickerViewModel {
         view?.notifyOnPickingFinished()
     }
     
-    private func pickImage() {
+    private func onPickImage() {
         Task(priority: .userInitiated) {
             let results = await view?.pickImage()
             guard let itemprovider = results?.first?.itemProvider else { return }
             guard let image = try? await loadImage(from: itemprovider) else { return }
-            let resizedImage = image.resizedTo(size: Constants.logoSize) ?? image
-            let imageFileName = "\(NSUUID().uuidString.prefix(10)).jpg"
-            guard let imageFileUrl = try await saveImage(resizedImage, fileName: imageFileName) else { return }
-            await notifyOnReadyImage(url: imageFileUrl)
+            await processImage(image)
         }
     }
     
-    private func pickCameraPhoto() {
+    private func onPickCameraPhoto() {
         Task(priority: .userInitiated) {
             guard let image = await view?.pickCameraPhoto() else { return }
-            let resizedImage = image.resizedTo(size: Constants.logoSize) ?? image
-            let imageFileName = "\(NSUUID().uuidString.prefix(10)).jpg"
+            await processImage(image)
+        }
+    }
+    
+    private func processImage(_ image: UIImage) async {
+        guard let cropRect = await view?.selectImageCropRegion(image: image) else { return }
+        let croppedImage = image.croppedTo(rect: cropRect) ?? image
+        let resizedImage = croppedImage.resizedTo(size: Constants.logoSize) ?? croppedImage
+        let imageFileName = "\(NSUUID().uuidString.prefix(10)).jpg"
+        do {
             guard let imageFileUrl = try await saveImage(resizedImage, fileName: imageFileName) else { return }
             await notifyOnReadyImage(url: imageFileUrl)
+        }
+        catch {
+            // TODO: Handle image saving error if needed
         }
     }
     
@@ -102,9 +110,9 @@ final class LogoPickerViewModelImpl: LogoPickerViewModel {
     func cellViewModel(forItemAt indexPath: IndexPath) -> ImagesCollectionViewCellViewModel {
         if indexPath.item == 0 {
             return .pickImageCell(onTapPick: { [unowned self] in
-                self.pickImage()
+                self.onPickImage()
             }, onTapTakePhoto: { [unowned self] in
-                self.pickCameraPhoto()
+                self.onPickCameraPhoto()
             })
         }
         let recentIndex = indexPath.item - 1

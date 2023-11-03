@@ -11,6 +11,8 @@
 		1A0A459C2AF2667F00582FC5 /* LogoPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0A459B2AF2667F00582FC5 /* LogoPickerViewController.swift */; };
 		1A0A459E2AF29C9B00582FC5 /* LogoPickerViewController+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0A459D2AF29C9B00582FC5 /* LogoPickerViewController+CollectionView.swift */; };
 		1A3BEF182AF4155B0041A2C9 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3BEF172AF4155B0041A2C9 /* UIImage+Extensions.swift */; };
+		1A3BEF1C2AF4214F0041A2C9 /* ImageResizeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3BEF1A2AF4214F0041A2C9 /* ImageResizeViewController.swift */; };
+		1A3BEF1D2AF4214F0041A2C9 /* ImageResizeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1A3BEF1B2AF4214F0041A2C9 /* ImageResizeViewController.xib */; };
 		1A57310B2AECD3B800A29E14 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A57310A2AECD3B800A29E14 /* AppDelegate.swift */; };
 		1A57310D2AECD3B800A29E14 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A57310C2AECD3B800A29E14 /* SceneDelegate.swift */; };
 		1A57310F2AECD3B800A29E14 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A57310E2AECD3B800A29E14 /* ViewController.swift */; };
@@ -26,6 +28,7 @@
 		1AB4F5722AF0F55700169166 /* LogoStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB4F5712AF0F55700169166 /* LogoStyle.swift */; };
 		1AC610202AF026FC009F2682 /* UrlRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC6101F2AF026FC009F2682 /* UrlRepository.swift */; };
 		1AC610222AF0270E009F2682 /* RecentImagesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC610212AF0270E009F2682 /* RecentImagesService.swift */; };
+		1ACA16C72AF4B683004CFC5F /* CropMaskLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACA16C62AF4B683004CFC5F /* CropMaskLayer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +36,8 @@
 		1A0A459B2AF2667F00582FC5 /* LogoPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoPickerViewController.swift; sourceTree = "<group>"; };
 		1A0A459D2AF29C9B00582FC5 /* LogoPickerViewController+CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogoPickerViewController+CollectionView.swift"; sourceTree = "<group>"; };
 		1A3BEF172AF4155B0041A2C9 /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
+		1A3BEF1A2AF4214F0041A2C9 /* ImageResizeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageResizeViewController.swift; sourceTree = "<group>"; };
+		1A3BEF1B2AF4214F0041A2C9 /* ImageResizeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageResizeViewController.xib; sourceTree = "<group>"; };
 		1A5731072AECD3B800A29E14 /* LogoPickerHomeTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LogoPickerHomeTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A57310A2AECD3B800A29E14 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1A57310C2AECD3B800A29E14 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -50,6 +55,7 @@
 		1AB4F5712AF0F55700169166 /* LogoStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoStyle.swift; sourceTree = "<group>"; };
 		1AC6101F2AF026FC009F2682 /* UrlRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlRepository.swift; sourceTree = "<group>"; };
 		1AC610212AF0270E009F2682 /* RecentImagesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentImagesService.swift; sourceTree = "<group>"; };
+		1ACA16C62AF4B683004CFC5F /* CropMaskLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropMaskLayer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +83,16 @@
 				1A3BEF172AF4155B0041A2C9 /* UIImage+Extensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		1A3BEF192AF420CB0041A2C9 /* ResizingViewController */ = {
+			isa = PBXGroup;
+			children = (
+				1A3BEF1A2AF4214F0041A2C9 /* ImageResizeViewController.swift */,
+				1A3BEF1B2AF4214F0041A2C9 /* ImageResizeViewController.xib */,
+				1ACA16C62AF4B683004CFC5F /* CropMaskLayer.swift */,
+			);
+			path = ResizingViewController;
 			sourceTree = "<group>";
 		};
 		1A5730FE2AECD3B800A29E14 = {
@@ -136,6 +152,7 @@
 				1A5731222AECE05400A29E14 /* Model */,
 				1AB4F56A2AF0CFA500169166 /* ImagesCollectionView */,
 				1AC6101E2AF026D2009F2682 /* RecentImagesStorage */,
+				1A3BEF192AF420CB0041A2C9 /* ResizingViewController */,
 				1A3BEF162AF415320041A2C9 /* Extensions */,
 				1A0A459B2AF2667F00582FC5 /* LogoPickerViewController.swift */,
 				1A0A459D2AF29C9B00582FC5 /* LogoPickerViewController+CollectionView.swift */,
@@ -237,6 +254,7 @@
 			files = (
 				1A5731172AECD3BB00A29E14 /* LaunchScreen.storyboard in Resources */,
 				1A5731142AECD3BB00A29E14 /* Assets.xcassets in Resources */,
+				1A3BEF1D2AF4214F0041A2C9 /* ImageResizeViewController.xib in Resources */,
 				1A5731122AECD3B800A29E14 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -261,7 +279,9 @@
 				1A0A459C2AF2667F00582FC5 /* LogoPickerViewController.swift in Sources */,
 				1A0A459E2AF29C9B00582FC5 /* LogoPickerViewController+CollectionView.swift in Sources */,
 				1A3BEF182AF4155B0041A2C9 /* UIImage+Extensions.swift in Sources */,
+				1ACA16C72AF4B683004CFC5F /* CropMaskLayer.swift in Sources */,
 				1A0A459A2AF2216D00582FC5 /* SpaceLayer.swift in Sources */,
+				1A3BEF1C2AF4214F0041A2C9 /* ImageResizeViewController.swift in Sources */,
 				1AB4F56C2AF0D59100169166 /* ImagesCollectionViewCellViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

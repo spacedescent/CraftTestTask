@@ -10,7 +10,7 @@ import Kingfisher
 
 final class LogoView: UIView {
     private struct Layout {
-        static let cornerRadiusToLogoSizeProportion: CGFloat = 1 / 6
+        static let cornerRadiusToLogoSizeRatio: CGFloat = 1 / 6
     }
     
     @IBOutlet weak var initialsLabel: UILabel!
@@ -98,7 +98,7 @@ final class LogoView: UIView {
         backgroundLayer?.frame = bounds
         switch shape {
         case .roundedRect:
-            layer.cornerRadius = bounds.width * Layout.cornerRadiusToLogoSizeProportion
+            layer.cornerRadius = bounds.width * Layout.cornerRadiusToLogoSizeRatio
         case .circle:
             layer.cornerRadius = bounds.width / 2
         }
