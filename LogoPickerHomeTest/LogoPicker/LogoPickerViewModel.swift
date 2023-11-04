@@ -39,7 +39,7 @@ final class LogoPickerViewModelImpl: LogoPickerViewModel {
         return paths[0]
     }
     
-    @MainActor private func notifyOnReadyImage(url: URL) async {
+    @MainActor private func notifyOnReadyImage(url: URL) {
         recentImagesService.add(imageUrl: url.absoluteString)
         view?.notifyOnStyleChanged(.image(url: url))
         view?.notifyOnPickingFinished()

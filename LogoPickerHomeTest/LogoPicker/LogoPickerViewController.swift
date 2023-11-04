@@ -39,7 +39,7 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
     
     private var imagePickerContinuation: CheckedContinuation<[PHPickerResult], Never>?
     private var cameraPickerContinuation: CheckedContinuation<UIImage?, Never>?
-
+    
     // MARK: - UI Elements
     
     private func createLabel(title: String, fontSize: CGFloat) -> UILabel {
@@ -154,12 +154,22 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
         super.viewDidLayoutSubviews()
     }
     
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        imagePickerContinuation?.resume(returning: [])
+        imagePickerContinuation = nil
+        cameraPickerContinuation?.resume(returning: nil)
+        cameraPickerContinuation = nil
+    }
+    
     // MARK: - LogoPickerView methods
     
     @MainActor
     func pickImage() async -> [PHPickerResult] {
         await withCheckedContinuation { continuation in
-            self.imagePickerContinuation = continuation
+            // release last continuation if previously presenteed image picker was dismissed without calling delegate method: by swiping down the popover or tapping outside
+            imagePickerContinuation?.resume(returning: [])
+            imagePickerContinuation = continuation
             
             var configuration = PHPickerConfiguration()
             configuration.selectionLimit = 1
@@ -173,7 +183,9 @@ public final class LogoPickerViewController: UIViewController, LogoPickerView {
     @MainActor
     func pickCameraPhoto() async -> UIImage? {
         await withCheckedContinuation { continuation in
-            self.cameraPickerContinuation = continuation
+            // release last continuation if previously presenteed camera picker was dismissed without calling delegate method: by swiping down the popover or tapping outside
+            cameraPickerContinuation?.resume(returning: nil)
+            cameraPickerContinuation = continuation
             let cameraPickerVC = UIImagePickerController()
             cameraPickerVC.sourceType = .camera
             cameraPickerVC.delegate = self
